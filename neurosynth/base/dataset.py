@@ -213,7 +213,7 @@ class Dataset(object):
         else:
             return [m for m in self.mappables if m.id in ids]
 
-    def get_ids_by_features(self, features, threshold=None, func=np.sum, get_image_data=False, get_weights=False):
+    def get_ids_by_features(self, features, threshold=None, func='sum', get_image_data=False, get_weights=False):
         """ A wrapper for FeatureTable.get_ids().
 
         Args:
@@ -229,7 +229,7 @@ class Dataset(object):
             features, threshold, func, get_weights)
         return self.get_image_data(ids) if get_image_data else ids
 
-    def get_ids_by_expression(self, expression, threshold=0.001, func=np.sum, get_image_data=False):
+    def get_ids_by_expression(self, expression, threshold=0.001, func='sum', get_image_data=False):
         ids = self.feature_table.get_ids_by_expression(
             expression, threshold, func)
         return self.get_image_data(ids) if get_image_data else ids
@@ -283,9 +283,9 @@ class Dataset(object):
         """ A convenience wrapper for ImageTable.get_image_data(). """
         return self.image_table.get_image_data(ids, voxels=voxels, dense=dense)
 
-    def get_feature_data(self, ids=None, **kwargs):
+    def get_feature_data(self, ids=None, features=None, dense=True):
         """ A convenience wrapper for FeatureTable.get_image_data(). """
-        return self.feature_table.get_feature_data(ids, **kwargs)
+        return self.feature_table.get_feature_data(ids, features=features, dense=dense)
 
     def get_feature_names(self, features=None):
         """ Returns a list of all current feature names.
@@ -297,12 +297,12 @@ class Dataset(object):
         else:
             return self.feature_table.feature_names
 
-    def get_feature_counts(self, func=np.sum, threshold=0.001):
+    def get_feature_counts(self, threshold=0.001):
         """ Returns a dictionary, where the keys are the feature names
         and the values are the number of studies tagged with the feature. """
         result = {}
         for f in self.get_feature_names():
-            result[f] = len(self.get_ids_by_features([f], func=func, threshold=threshold))
+            result[f] = len(self.get_ids_by_features([f], threshold=threshold))
         return result
 
     @classmethod
@@ -442,8 +442,9 @@ class FeatureTable(object):
         self.description = description
 
     def load(self, filename, validate=False):
-        """ Loads FeatureTable data from file. Input must be a dense matrix stored as 
-        plaintext (see _parse_txt() for details).
+        """ Loads FeatureTable data from file. Input must be in 1 of 2 formats:
+        (1) A sparse JSON representation (see _parse_json() for details)
+        (2) A dense matrix stored as plaintext (see _parse_txt() for details)
         If validate == True, any mappable IDs in the input file that cannot be located
         in the root Dataset's ImageTable will be silently culled. """
         # try:
@@ -455,6 +456,20 @@ class FeatureTable(object):
         except Exception as e:
             logger.error("%s cannot be parsed: %s" % (filename, e))
 
+    # def _features_from_json(self, filename, validate=False):
+    #     """ Parses FeatureTable from a sparse JSON representation, where keys are feature
+    #     names and values are dictionaries of mappable id: weight mappings. E.g.,
+    #       {'language': ['study1': 0.003, 'study2': 0.103]} """
+    #     import json
+    #     json_data = json.loads(open(filename))
+    #     # Find all unique mappable IDs
+    #     unique_ids = set()
+    #     unique_ids = [unique_ids.update(d) for d in json_data.itervalues()]
+    #     # Cull invalid IDs if validation is on
+    #     if validate:
+    #         unique_ids &= set(self.dataset.image_table.ids)
+    #     # ...
+    #     self.data = data
 
     def _features_from_txt(self, filename, validate=False):
         """ Parses FeatureTable from a plaintext file that represents a dense matrix,
@@ -463,47 +478,46 @@ class FeatureTable(object):
         mappable IDs should be included as the first column and first row, respectively. """
 
         # Use pandas to read in data
-        self.data = pd.read_csv(filename, delim_whitespace=True, index_col=0).to_sparse()
+        data = pd.read_csv(filename, delim_whitespace=True, index_col=0)
+        self.feature_names = list(data.columns)
+        self.ids = data.index.values.astype(str)  # Always represent IDs as strings
+        self.data = data.values
 
         # Remove mappables without any features
-        # if validate:
-        #     valid_ids = set(self.ids) & set(self.dataset.image_table.ids)
-        #     if len(valid_ids) < len(self.dataset.image_table.ids):
-        #         valid_id_inds = np.in1d(self.ids, np.array(valid_ids))
-        #         self.data = self.data[valid_id_inds,:]
-        #         self.ids = self.ids[valid_id_inds]
-        # self.data = sparse.csr_matrix(self.data)
+        if validate:
+            valid_ids = set(self.ids) & set(self.dataset.image_table.ids)
+            if len(valid_ids) < len(self.dataset.image_table.ids):
+                valid_id_inds = np.in1d(self.ids, np.array(valid_ids))
+                self.data = self.data[valid_id_inds,:]
+                self.ids = self.ids[valid_id_inds]
+        self.data = sparse.csr_matrix(self.data)
 
-    @property
-    def feature_names(self):
-        return list(self.data.columns)
-    
     def get_feature_data(self, ids=None, features=None, dense=True):
         """ Slices and returns a subset of feature data.
 
         Args:
-            ids: A list or 1D numpy array of Mappable ids to return rows for. 
-                If None, returns data for all Mappables (i.e., all rows in array). 
-            features: A list or 1D numpy array of named features to return. 
-                If None, returns data for all features (i.e., all columns in array).
-            dense: Optional boolean. When True (default), convert the result to a dense
-                array before returning. When False, keep as sparse matrix. Note that if 
-                ids is not None, the returned array will always be dense.
+          ids: A list or 1D numpy array of Mappable ids to return rows for. 
+            If None, returns data for all Mappables (i.e., all rows in array). 
+          features: A list or 1D numpy array of named features to return. 
+            If None, returns data for all features (i.e., all columns in array).
+          dense: Optional boolean. When True (default), convert the result to a dense
+            array before returning. When False, keep as sparse matrix. Note that if 
+            ids is not None, the returned array will always be dense.
+
         Returns:
           A 2D numpy array, with mappable IDs in rows and features in columns.
         """
         result = self.data
-
         if ids is not None:
-            result = result.ix[ids]
-
+            idxs = np.where(np.in1d(np.array(self.ids), np.array(ids)))[0]
+            result = result[idxs,:]
         if features is not None:
-            result = result.ix[:,features]
-
-        return result.to_dense() if dense else result
+            idxs = np.where(np.in1d(np.array(self.feature_names), np.array(features)))[0]
+            result = result[:,idxs]
+        return result.toarray() if dense else result
 
     def get_ordered_names(self, features):
-        """ Given a list of features, returns features in order that they appear in database
+        """ Given a list of featurs, returns features in order that they appear in database
         Args:
             features: A list or 1D numpy array of named features to return. 
 
@@ -511,10 +525,12 @@ class FeatureTable(object):
             A list of features in order they appear in database
         """
 
-        idxs = np.where(np.in1d(self.data.columns.values, np.array(features)))[0]
-        return list(self.data.columns[idxs].values)
+        idxs = np.where(np.in1d(np.array(self.feature_names), np.array(features)))[0]
+        result = np.array(self.feature_names)[idxs]
 
-    def get_ids(self, features, threshold=None, func=np.sum, get_weights=False):
+        return list(result)
+
+    def get_ids(self, features, threshold=None, func='sum', get_weights=False):
         """ Returns a list of all Mappables in the table that meet the desired feature-based
         criteria.
 
@@ -540,34 +556,44 @@ class FeatureTable(object):
         if isinstance(features, str):
             features = [features]
         features = self.search_features(features)  # Expand wild cards
-        feature_weights = self.data.ix[:, features]
-        weights = feature_weights.apply(func, 1)
-        above_thresh = weights[weights >= threshold]
-        # ids_to_keep = self.ids[above_thresh]
-        return above_thresh if get_weights else list(above_thresh.index)
+        feature_indices = np.in1d(np.array(self.feature_names), np.array(features))
+        data = self.data.toarray()
+        feature_weights = data[:, feature_indices]
+        weights = eval("np.%s(tw, 1)" % func, {}, {
+                       'np': np, 'tw': feature_weights})  # Safe eval
+        above_thresh = (weights >= threshold)
+        ids_to_keep = self.ids[above_thresh]
+        if get_weights:
+            return dict(zip(ids_to_keep, list(weights[above_thresh])))
+        else:
+            return ids_to_keep
 
     def search_features(self, search):
         ''' Returns all features that match any of the elements in the input list. '''
         search = [s.replace('*', '.*') for s in search]
-        cols = list(self.data.columns)
         results = []
         for s in search:
-            results.extend([f for f in cols if re.match(s + '$', f)])
-        return list(set(results))
+            results.extend([f for f in self.feature_names if re.match(s + '$', f)])
+        return results
 
-    def get_ids_by_expression(self, expression, threshold=0.001, func=np.sum):
+    def get_ids_by_expression(self, expression, threshold=0.001, func='sum'):
         """ Use a PEG to parse expression and return mappables. """
         from neurosynth.base import lexparser as lp
         lexer = lp.Lexer()
         lexer.build()
         parser = lp.Parser(
-            lexer, self.dataset, threshold=threshold, func=np.sum)
+            lexer, self.dataset, threshold=threshold, func='sum')
         parser.build()
         return parser.parse(expression).keys()
 
-    def get_features_by_ids(self, ids=None, threshold=0.0001, func=np.mean, get_weights=False):
-        ''' Returns features for which the mean loading across all specified studies (in ids)
-        is >= threshold. '''
-        weights = self.data.ix[ids].apply(func, 0)
-        above_thresh = weights[weights >= threshold]
-        return above_thresh if get_weights else list(above_thresh.index)
+    def get_features_by_ids(self, ids=None, threshold=0.0001, func='sum', get_weights=False):
+        ''' Returns features that mach to ids'''
+        id_indices = np.in1d(self.ids, ids)
+        data = self.data.toarray()
+        ids_weights = reduce(lambda x,y: x+y, data[id_indices,:])/len(id_indices)
+        above_thresh = (ids_weights >= threshold)
+        features_to_keep = np.array(self.feature_names)[np.where(above_thresh)]
+        if get_weights:
+            return dict(zip(features_to_keep, list(ids_weights[above_thresh])))
+        else:
+            return features_to_keep
