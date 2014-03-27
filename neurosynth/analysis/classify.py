@@ -37,10 +37,13 @@ def feature_selection(feat_select, X, y):
 
 def get_score(X, y, clf, scoring = 'accuracy'):
     from sklearn.preprocessing import binarize
-    from sklearn.metrics import accuracy_score
 
     if scoring == 'accuracy':
+        from sklearn.metrics import accuracy_score
         score = accuracy_score(y, binarize(clf.predict(X), 0.5))
+    elif scoring =='f1':
+        from sklearn.metrics import f1_score
+        score = f1_score(y, binarize(clf.predict(X), 0.5))
     else:
         score = clf.score(X, y)
 
@@ -119,6 +122,9 @@ def get_studies_by_regions(dataset, masks, threshold=0.08,
     y = [[idx] * len(ids) for (idx, ids) in enumerate(grouped_ids)]
     y = reduce(lambda a, b: a + b, y)  # Flatten
     y = np.array(y)
+
+    if not False in [i.isdigit() for i in flat_ids]:
+        flat_ids = [int(s) for s in flat_ids]
 
     # Extract feature set for each class separately
     X = [dataset.get_feature_data(ids=group_ids, features=features) for group_ids in grouped_ids]
@@ -280,7 +286,7 @@ class Classifier:
         return self.clf
 
     def set_class_weight(self, class_weight='auto', y=None):
-        """ Sets the class_weight of the classifier to match X """
+        """ Sets the class_weight of the classifier to match y """
 
         if class_weight == None:
             cw = None
