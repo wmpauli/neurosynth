@@ -32,11 +32,7 @@ class Mappable(object):
 
         # Convert between stereotactic spaces
         if transformer is not None and self.space != transformer.target:
-            print "applying transform"
-            print "self.space: " + str(self.space)
-            print "peaks" + str(peaks)
             peaks = transformer.apply(self.space, peaks)
-            print "peaks" + str(peaks)
 
 
         # Convert from XYZ coordinates to matrix indices, saving both

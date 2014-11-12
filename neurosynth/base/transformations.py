@@ -50,7 +50,6 @@ def t88_to_mni():
 def bregma_to_whs():
     """ convert between bregma coordinates and whs coordinates using Wolfgang's
     transform """
-    print "using bregma 2 whs transform"
     return np.array([[-1.0, 0.0, 0.0, 0.08], [0.0, -1.0, 0.0, 1.17], [0.0, 0.0, -1.0, 7.5], [0.0, 0.0, 0.0, 1.0]]).T
 #    return np.array([[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0], [0.0, 0.0, 1.0, 0], [0.0, 0.0, 0.0, 1.0]]).T
 
