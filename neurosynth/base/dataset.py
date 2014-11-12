@@ -371,8 +371,9 @@ class ImageTable(object):
         logger.info("Creating matrix of %d mappables..." % (len(mappables),))
         for i, s in enumerate(mappables):
             logger.debug("%s/%s..." % (str(i + 1), str(len(mappables))))
+            header = self.masker.get_header()
             img = imageutils.map_peaks_to_image(
-                s.peaks, r=r, header=self.masker.get_header())
+                s.peaks, r=r, header=header, vox_dims=header['pixdim'][1:4], dims=header['dim'][1:4])
             img_masked = self.masker.mask(img)
             if use_sparse:
                 nz = np.nonzero(img_masked)

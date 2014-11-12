@@ -14,10 +14,20 @@ def transform(foci, mat):
     return np.dot(foci, t)[:, 0:3]
 
 
-def xyz_to_mat(foci, xyz_dims=None, mat_dims=None):
+def xyz_to_mat(foci, target='MNI', xyz_dims=None, mat_dims=None):
     """ Convert an N x 3 array of XYZ coordinates to matrix indices. """
     foci = np.hstack((foci, np.ones((foci.shape[0], 1))))
-    mat = np.array([[-0.5, 0, 0, 45], [0, 0.5, 0, 63], [0, 0, 0.5, 36]]).T
+    origins_mat = {
+        'MNI' : [45, 63, 36],
+        'WHS' : [36.72, 96.64, 37.24]
+    }
+    if not xyz_dims:
+        if target == "MNI": 
+            xyz_dims = [-2, 2, 2]
+        elif target == "WHS":
+            xyz_dims = [.25, .25, .25]
+    origin = origins_mat[target]
+    mat = np.array([[1.0/xyz_dims[0], 0, 0, origin[0]], [0, 1.0/xyz_dims[1], 0, origin[1]], [0, 0, 1.0/xyz_dims[2], origin[2]]]).T
     result = np.dot(foci, mat)[:, ::-1]  # multiply and reverse column order
     return np.round_(result).astype(int)  # need to round indices to ints
 
@@ -40,7 +50,10 @@ def t88_to_mni():
 def bregma_to_whs():
     """ convert between bregma coordinates and whs coordinates using Wolfgang's
     transform """
-    return np.array([[1.0, 0.0, 0.0, 0.08], [0.0, 1.0, 0.0, 1.17], [0.0, 0.0, 1.0, 7.5], [0.0, 0.0, 0.0, 1.0]])
+    print "using bregma 2 whs transform"
+    return np.array([[-1.0, 0.0, 0.0, 0.08], [0.0, -1.0, 0.0, 1.17], [0.0, 0.0, -1.0, 7.5], [0.0, 0.0, 0.0, 1.0]]).T
+#    return np.array([[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0], [0.0, 0.0, 1.0, 0], [0.0, 0.0, 0.0, 1.0]]).T
+
 
 class Transformer(object):
 

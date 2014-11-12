@@ -1,5 +1,3 @@
-# emacs: -*- mode: python-mode; py-indent-offset: 2; tab-width: 2; indent-tabs-mode: nil -*-
-# ex: set sts=2 ts=2 sw=2 et:
 """ Base Mappable object and all objects that inherit from Mappable.
 
 A Mappable object is defined by the presence of one or more Peaks that can
@@ -34,11 +32,16 @@ class Mappable(object):
 
         # Convert between stereotactic spaces
         if transformer is not None and self.space != transformer.target:
+            print "applying transform"
+            print "self.space: " + str(self.space)
+            print "peaks" + str(peaks)
             peaks = transformer.apply(self.space, peaks)
+            print "peaks" + str(peaks)
+
 
         # Convert from XYZ coordinates to matrix indices, saving both
         self.xyz = peaks
-        self.peaks = transformations.xyz_to_mat(peaks)
+        self.peaks = transformations.xyz_to_mat(peaks, transformer.target)
 
     def map_peaks(self):
         """Map all Peaks to a new Nifti1Image."""
