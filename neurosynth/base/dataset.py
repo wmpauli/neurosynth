@@ -206,6 +206,10 @@ class Dataset(object):
         ids = self.feature_table.get_ids_by_expression(expression, threshold, func)
         return self.get_image_data(ids) if get_image_data else ids
 
+    def get_ids_by_animal(self, animal, func=np.sum, get_image_data=False):
+        ids = self.feature_table.get_ids_by_animal(expression, threshold, func)
+        return self.get_image_data(ids) if get_image_data else ids
+
     def get_ids_by_mask(self, mask, threshold=0.0, get_image_data=False):
         """ Return all mappable objects that activate within the bounds
         defined by the mask image. 

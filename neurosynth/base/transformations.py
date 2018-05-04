@@ -50,7 +50,14 @@ def t88_to_mni():
 def bregma_to_whs():
     """ convert between bregma coordinates and whs coordinates using Wolfgang's
     transform (BTW, this is also documented in Coordinates_v1_vs_v1.01.pdf at http://software.incf.org/software/waxholm-space-atlas-of-the-sprague-dawley-rat-brain"""
-    return np.array([[-1.0, 0.0, 0.0, 0.08], [0.0, -1.0, 0.0, 1.17], [0.0, 0.0, -1.0, 7.5], [0.0, 0.0, 0.0, 1.0]]).T
+    # return np.array([[-1.0, 0.0, 0.0, 0.08], [0.0, -1.0, 0.0, 1.17], [0.0, 0.0, -1.0, 7.5], [0.0, 0.0, 0.0, 1.0]]).T
+    # return np.array([[-0.981128, 0.0403032, 0.0986429, -0.0167773], [0.0335147, 0.999714, 0.00883351, -0.584105],[ -0.108513, 0.00552509, -1.06724, 6.317],[0.0, 0.0, 0.0, 1.0]]).T
+    return np.array([[-1.12053, 0.0403032, -0.00445326, 0.291627],
+                     [0.036827, 0.999714, 0.0122884, -0.605691],
+                     [0.00413442, 0.00552509, -1.07273, 7.32751],
+                     [0, 0, 0, 1]]).T
+
+
 #    return np.array([[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0], [0.0, 0.0, 1.0, 0], [0.0, 0.0, 0.0, 1.0]]).T
 
 def identity():
