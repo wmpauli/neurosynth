@@ -38,7 +38,7 @@ s = np.array(s)
 
 # save the counts to a nifti file
 result_file = path.join(results_dir, 'count.nii.gz')
-save_img(s, result_files, dataset.masker)
+save_img(s, result_file, dataset.masker)
 
 # convert frequencies to densities (i.e. normalize by dividing by the total number of studies
 s /= s.sum()
