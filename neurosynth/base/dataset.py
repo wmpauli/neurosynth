@@ -38,6 +38,7 @@ class Dataset(object):
         Args:
           filename: The name of a database file containing a list of activations.
           feature_filename: An optional filename to construct a FeatureTable from.
+          path: path to 'filename' and 'feature_filename'
           masker: An optional Nifti/Analyze image name defining the space to use for
             all operations. If no image is passed, defaults to the MNI152 2 mm
             template packaged with FSL.
