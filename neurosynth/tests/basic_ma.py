@@ -15,7 +15,7 @@ print("Performing forward and reverse inference for feature: %s" % feature)
 
 
 # import modules
-from os import path
+from os import path, makedirs
 import nibabel as nb
 
 from neurosynth.base.dataset import Dataset
@@ -52,9 +52,9 @@ ids = dataset.get_ids_by_features(('%s*' % feature), threshold=0.1)
 ma = meta.MetaAnalysis(dataset, ids)
 results_path = path.join('results', 'meta', feature)
 if not path.exists(results_path):
-    path.makedirs(results_path)
+    makedirs(results_path)
 
-print("saving results to: %s" results_path)
+    print("saving results to: %s" % results_path)
 ma.save_results(results_path)
 
 # note, figure 2 of manuscript was used by plotting the z-score statistical maps for forward inference (pAgF_z.nii.gz) and reverse inference (pFgA_z.nii.gz)
