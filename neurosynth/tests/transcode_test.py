@@ -1,6 +1,12 @@
-# for now, let's assume we already ran basic_ma
+# this script allows you to do some basic cross-species mapping.  For
+# this script to work, you first need to download our version of the
+# neurosynth data.  This is done in two step (one small, and one big
+# step):
 
-from os.path import dirname, join, pardir, sep as pathsep
+# 1. git clone https://github.com/wmpauli/neurosynth-data.git
+# 2. run the download_feature_images.sh script in the folder created above
+
+from os import path 
 from neurosynth.base.dataset import Dataset
 from neurosynth.base.dataset import FeatureTable
 from neurosynth.base import transformations
@@ -22,15 +28,17 @@ def get_p_value(r, df):
     return prob
 
 
+# Here, we are relying on a previously created feature_iamges, which
+# is also faster. If you do want to start from scratch, start by
+# running the script 'prepare_transcoder.py' in this directory.  This
+# variable should point to the folder on your computer where you
+# downloaded the feature images, ideally in your clone of the
+# wmpauli/neurosynth-data repository
+dataset_dir = path.join(os.path.expanduser('~'), 'Documents', 'neurosynth-data')
 
-from transcode import *
-
-# this is the main workhorse. This can be initialized different, for
-# example by providing a list of folders and the names of features.
-# Here, we are relying on a previously stored version, which is also
-# faster. If you do want to start from scratch, start by running the
-# script 'prepare_transcoder.py' in this directory
-transcoder = Transcoder(source='from_arrays')
+# This can be initialized different, for example by providing a list
+# of folders and the names of features.  
+transcoder = transcode.Transcoder(source='from_arrays', dataset_dir=dataset_dir)
 
 resource_dir = path.join(path.pardir, 'resources') 
 
