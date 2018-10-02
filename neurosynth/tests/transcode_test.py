@@ -54,13 +54,6 @@ else:
     print('Please provide an argument for what you would like to do regarding cross-species mapping')
     exit(1)
 
-# this is the main workhorse. This can be initialized different, for
-# example by providing a list of folders and the names of features.
-# Here, we are relying on a previously stored version, which is also
-# faster. If you do want to start from scratch, start by running the
-# script 'prepare_transcoder.py' in this directory
-transcoder = transcode.Transcoder(source='from_arrays')
-
 # Here, we are relying on a previously created feature_iamges, which
 # is also faster. If you do want to start from scratch, start by
 # running the script 'prepare_transcoder.py' in this directory.  This
@@ -68,6 +61,13 @@ transcoder = transcode.Transcoder(source='from_arrays')
 # downloaded the feature images, ideally in your clone of the
 # wmpauli/neurosynth-data repository
 dataset_dir = path.join(os.path.expanduser('~'), 'Documents', 'neurosynth-data')
+
+# this is the main workhorse. This can be initialized different, for
+# example by providing a list of folders and the names of features.
+# Here, we are relying on a previously stored version, which is also
+# faster. If you do want to start from scratch, start by running the
+# script 'prepare_transcoder.py' in this directory
+transcoder = transcode.Transcoder(source='from_arrays', dataset_dir=dataset_dir)
 
 
 df = pd.DataFrame(columns=transcoder.feature_names)
