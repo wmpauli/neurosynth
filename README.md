@@ -97,7 +97,7 @@ Reproducing these figures should take less than a minute for each of them (once 
 
 **Figure 3:**
 
-	> python transcode_test.py spatial memory
+	> python transcode_test.py spatial_memory
 	
 	> python transcode_test.py fear
 
