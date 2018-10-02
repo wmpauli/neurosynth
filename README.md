@@ -7,6 +7,7 @@ Neurosynth is a Python package for large-scale synthesis of functional neuroimag
 
 Dependencies:
 
+* Python 2.7
 * NumPy/SciPy
 * pandas
 * NiBabel
