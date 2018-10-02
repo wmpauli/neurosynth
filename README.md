@@ -19,15 +19,15 @@ Dependencies:
 * [ply](http://www.dabeaz.com/ply/) (optional, for complex structured queries)
 * scikit-learn (optional, used in some classification functions)
 
-Assuming you have those packages in working order, the easiest way to install Neurosynth is from the command line with pip:
+Assuming you have those packages in working order, the easiest way to install Neurosynth by cloning this repository then install it from source:
 
-	> pip install neurosynth
+	> python setup.py install --record files.txt
 
-Alternatively (for the latest dev version), download or clone the package from github, then install it from source:
+Depending on your operating system, you may need superuser privileges (prefix the above line with 'sudo'). Overall, the installation process should only take a couple of minutes.
 
-	> python setup.py install
+In addition to this source code, you will also have to download the data used in the analyses.  To do so, please follow the instructions in the data repository: https://github.com/wmpauli/neurosynth
 
-Depending on your operating system, you may need superuser privileges (prefix the above line with 'sudo').
+If you want to uninstall this version of neurosynth, simply delete the files listed in files.txt. 
 
 That's it! You should now be ready to roll.
 
@@ -85,8 +85,31 @@ Once we've got a set of studies we're happy with, we can run a simple meta-analy
 You should now have a set of Nifti-format brain images on your drive that display various meta-analytic results. The image names are somewhat cryptic; see the Documentation for details. It's important to note that the meta-analysis routines currently implemented in Neurosynth aren't very sophisticated; they're designed primarily for efficiency (most analyses should take just a few seconds), and take multiple shortcuts as compared to other packages like ALE or MKDA. But with that caveat in mind (and one that will hopefully be remedied in the near future), Neurosynth gives you a streamlined and quick way of running large-scale meta-analyses of fMRI data.
 
 
+## Reproducing results in manuscript
+
+All the scripts necessary for reproducing the figures reported in the compantion manuscript (under review) are in the folder:
+	> neurosynth/tests
+
+Reproducing these figures should take less than a minute for each of them (once you have downloaded the neurosynth-data).
+
+**Figure 1:**
+	> python density.py
+
+**Figure 2:**
+	> python basic_ma.py fear
+
+**Figure 3:**
+	> python transcode_test.py spatial memory
+	> python transcode_test.py fear
+
+**Figure 4:**
+	> python transcode_test.py prelimbic
+
+**Figure 5:**
+	> python transcode_test.py fontolateral
+	
 ## Getting help
 
 For a more comprehensive set of examples, see [this tutorial](http://nbviewer.ipython.org/urls/raw.github.com/neurosynth/neurosynth/master/examples/neurosynth_demo.ipynb)--also included in IPython Notebook form in the examples/ folder (along with several other simpler examples).
 
-For bugs or feature requests, please [create a new issue](https://github.com/neurosynth/neurosynth/issues/new). If you run into problems installing or using the software, try posting to the [Neurosynth Google group](https://groups.google.com/forum/#!forum/neurosynthlist) or email [Tal Yarkoni](mailto:tyarkoni@gmail.com).
+For bugs or feature requests, please [create a new issue](https://github.com/wmpauli/neurosynth/issues/new). If you run into problems installing or using the software, email [Wolfgang M. Pauli](mailto:Wolfgang.PauliL@microsoft.com).
