@@ -3,12 +3,6 @@
 
 Neurosynth is a Python package for large-scale synthesis of functional neuroimaging data.
 
-## Code status
-
-* [![tests status](https://secure.travis-ci.org/neurosynth/neurosynth.png?branch=master)](https://travis-ci.org/neurosynth/neurosynth) travis-ci.org (master branch)
-
-* [![Coverage Status](https://coveralls.io/repos/neurosynth/neurosynth/badge.png?branch=master)](https://coveralls.io/r/neurosynth/neurosynth?branch=master)
-
 ## Installation
 
 Dependencies:
@@ -93,19 +87,25 @@ All the scripts necessary for reproducing the figures reported in the compantion
 Reproducing these figures should take less than a minute for each of them (once you have downloaded the neurosynth-data).
 
 **Figure 1:**
+
 	> python density.py
 
 **Figure 2:**
+
 	> python basic_ma.py fear
 
 **Figure 3:**
+
 	> python transcode_test.py spatial memory
+	
 	> python transcode_test.py fear
 
 **Figure 4:**
+
 	> python transcode_test.py prelimbic
 
 **Figure 5:**
+
 	> python transcode_test.py fontolateral
 	
 ## Getting help
