@@ -1,6 +1,6 @@
 # this script allows you to do some basic cross-species mapping.  For
 # this script to work, you first need to download our version of the
-# neurosynth data.  This is done in two step (one small, and one big
+# neurosynth data.  This is done in two steps (one small, and one big
 # step):
 
 
@@ -47,7 +47,7 @@ elif goal == 'fear':
     images_to_decode = [path.join(resource_dir, 'fear_pFgA_z_FDR_0.01.nii.gz')]
     direction = 'rat2human'
 elif goal == 'spatial_memory':
-    # we are using the results from a previously run reverse inference for the feature 'fear' in rodents
+    # we are using the results from a previously run reverse inference for the feature 'spatial memory' in rodents
     images_to_decode = [path.join(resource_dir, 'spatialMemory_pFgA_z_FDR_0.01.nii.gz')]
     direction = 'rat2human'
 else:
