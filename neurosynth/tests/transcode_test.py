@@ -1,13 +1,13 @@
 # for now, let's assume we already ran basic_ma
 
-from os.path import dirname, join, pardir, sep as pathsep
+from os import path 
 from neurosynth.base.dataset import Dataset
 from neurosynth.base.dataset import FeatureTable
 from neurosynth.base import transformations
 from neurosynth.base.imageutils import *
 from neurosynth.base.mask import Masker
 from neurosynth.analysis import meta, decode, transcode
-import os
+import os, sys
 import nibabel as nb
 import nibabel as nib
 import matplotlib.pyplot as plt
@@ -21,26 +21,39 @@ def get_p_value(r, df):
     prob = betainc(0.5*df, 0.5, df / (df + t_squared))
     return prob
 
+resource_dir = path.join(path.pardir, 'resources') 
 
-
-from transcode import *
+# this might now be the most common use, but for demonstration
+# purposes, we are going to have this script process arguments, so
+# that we can quickly reproduce the figures of the manuscript
+goal = sys.argv[1]
+if goal == 'prelimbic':
+    # we are using an anatomical masks, based on the the Paxinos atlas
+    images_to_decode = [path.join(resource_dir, 'prelimbic.nii.gz')]
+    direction = 'rat2human'
+elif goal == 'frontolateral':
+    # we are using an anatomical mask, based on the harvard-oxford anatomical atlas
+    images_to_decode = [path.join(resource_dir, 'middle_frontal_gyrus.nii.gz')]
+    direction = 'human2rat'
+elif goal == 'fear':
+    # we are using the results from a previously run reverse inference for the feature 'fear' in rodents
+    images_to_decode = [path.join(resource_dir, 'fear_pFgA_z_FDR_0.01.nii.gz')]
+    direction = 'rat2human'
+elif goal == 'spatial_memory':
+    # we are using the results from a previously run reverse inference for the feature 'fear' in rodents
+    images_to_decode = [path.join(resource_dir, 'spatialMemory_pFgA_z_FDR_0.01.nii.gz')]
+    direction = 'rat2human'
+else:
+    print('Please provide an argument for what you would like to do regarding cross-species mapping')
+    exit(1)
 
 # this is the main workhorse. This can be initialized different, for
 # example by providing a list of folders and the names of features.
 # Here, we are relying on a previously stored version, which is also
 # faster. If you do want to start from scratch, start by running the
 # script 'prepare_transcoder.py' in this directory
-transcoder = Transcoder(source='from_arrays')
+transcoder = transcode.Transcoder(source='from_arrays')
 
-resource_dir = path.join(path.pardir, 'resources') 
-
-# as an example, we will map the prelimbic cortex from rodents to humans
-images_to_decode = [os.path.join(resource_dir, 'prelimbic.nii.gz')]
-direction = 'rat2human'
-
-# # alternatively, you could map the middle_frontal_gyrus to humans
-# images_to_decode = [os.path.join(resource_dir, 'middle_frontal_gyrus.nii.gz')]
-# direction = 'human2rat'
 
 df = pd.DataFrame(columns=transcoder.feature_names)
 top_features = []
@@ -69,6 +82,11 @@ prob = get_p_value(result, df)
 result_fwe[prob > .05 / result.shape[1]] = 0.0
 
 # save results
-result_file = 'decoder/results/transcode_prelimbic.nii.gz'
-save_img(result_1, result_file, transcoder.maskers[transcoder.target_idx]) 
+result_path = os.path.join('results','transcoder')
+if not path.exists(result_path):
+    os.makedirs(result_path)
+
+result_file = os.path.join(result_path, '%s.nii.gz' % goal)
+print("Saving results to: %s" % result_file)
+save_img(result_fwe, result_file, transcoder.maskers[transcoder.target_idx]) 
 
