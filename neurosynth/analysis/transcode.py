@@ -13,7 +13,7 @@ import glob
 
 class Transcoder:
 
-    def __init__(self, dataset=None, method='pearson', features=None, masks=None, image_type='pFgA_z', threshold=0.001, source='from_folders', feature_names=None, animals = ['rat','human']):
+    def __init__(self, dataset=None, method='pearson', features=None, masks=None, image_type='pFgA_z', threshold=0.001, source='from_folders', feature_names=None, animals = ['rat','human'], dataset_dir=None):
         """ Initialize a new Decoder instance.
 
         Args:
@@ -35,6 +35,8 @@ class Transcoder:
         self.set_masks(masks)
         self.animals = animals
 
+        self.dataset_dir = dataset_dir
+        
         if feature_names is not None:
             self.feature_names = feature_names
         else:
@@ -143,7 +145,7 @@ class Transcoder:
     def _load_features_from_arrays(self):
         self.feature_images = []
         for i, animal in enumerate(self.animals):
-            filename = "feature_images_%s.npy" % animal
+            filename = path.join(self.dataset_dir, "feature_images_%s.npy" % animal)
             try:
                 feature_images = np.load(filename)
             except:
@@ -238,20 +240,20 @@ class Transcoder:
 
     def save_feature_images(self):
         for i, feature_image in enumerate(self.feature_images):
-            filename = "feature_images_%s.npy" % self.animals[i]
+            filename = path.join(self.dataset_dir, "feature_images_%s.npy" % self.animals[i])
             np.save(filename, feature_image)
 
 
     def save_feature_names(self, filename = 'feature_names.txt'):
         """ save names of features that the transcoder is using """
 
-        f = open(filename, 'w')
+        f = open(path.join(self.dataset_dir, filename), 'w')
         f.write('\n'.join(self.feature_names) + '\n')
         f.close()
 
 
     def load_feature_names(self, filename = 'feature_names.txt'):
-        f = open(filename,'r')
+        f = open(path.join(self.dataset_dir, filename),'r')
         self.feature_names = f.read().splitlines()
         f.close()
 
