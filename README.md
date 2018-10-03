@@ -15,6 +15,8 @@ Dependencies:
 * scikit-learn (optional, used in some classification functions)
 * scipy
 
+We provide an **enivornment.yml**, which allows you to quickly setup a [conda](https://conda.io/docs/user-guide/tasks/manage-environments.html) python environment with all the dependencies needed for neurosynth analyses.
+
 Assuming you have those packages in working order, the easiest way to install Neurosynth by cloning this repository then install it from source:
 
 	> python setup.py install --record files.txt
