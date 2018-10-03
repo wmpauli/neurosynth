@@ -13,6 +13,7 @@ Dependencies:
 * NiBabel
 * [ply](http://www.dabeaz.com/ply/) (optional, for complex structured queries)
 * scikit-learn (optional, used in some classification functions)
+* scipy
 
 Assuming you have those packages in working order, the easiest way to install Neurosynth by cloning this repository then install it from source:
 
