@@ -13,7 +13,6 @@ Dependencies:
 * NiBabel
 * [ply](http://www.dabeaz.com/ply/) (optional, for complex structured queries)
 * scikit-learn (optional, used in some classification functions)
-* scipy
 
 For your convenience, we provide a conda environment definition file (**enivornment.yml**), which allows you to quickly setup a [conda](https://conda.io/docs/user-guide/tasks/manage-environments.html) python environment with all the dependencies needed for your analyses.
 
