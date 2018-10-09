@@ -1,7 +1,21 @@
 
-# What is Neurosynth?
+# What is Neurobabel?
 
-Neurosynth is a Python package for large-scale synthesis of functional neuroimaging data.
+Neurobabel is an extension to the Neurosynth Python package for large-scale synthesis of functional neuroimaging data.  The Neurobabel extension was created to serve two distinct purposes:
+
+1. To enable the automated synthesis of behavioral neuroscience studies in rodents, analogous to how Neurosynth does for human neuroimaging studies.
+2. To enable region to region mapping of brain regions across species, as well as cross-species mapping of psychological functions.
+
+This extension takes into account the (1) coordinates at which intracranial surgery was performed as part of a behavioral neuroscience study in rodents and (2) the occurrence of scientific terms in the articles describing the results of each study.  In combination with the existing Neurosynth dataset for human neuroimaging studies, this framework enables the cross-species mapping of psychological functions, by using the vocabulary of scientific terms shared among the two research communities as a formal, semantic link.
+
+Several key additions to the orgininal Neurosynth codebase were made:
+
+1. The database schema was extended with an attribute for representing the species used in a study (i.e. human vs. rat).
+2. We added a coordinate space and coordinate space transformations suitable for behavioral neuroscience studies.
+3. Analysis scripts were updated to properly handle the above two changes.
+4. Analysis scripts were added (e.g. analysis/transcode.py) to enable cross-species mappings of psychological functions.
+
+A significant effort was made to ensure that researchers familiar with the original Neurosynth framework will be able to easily transition to using this extension.  
 
 ## Installation
 
