@@ -36,7 +36,7 @@ Assuming you have those packages in working order, the easiest way to install Ne
 
 Depending on your operating system, you may need superuser privileges (prefix the above line with 'sudo'). Overall, the installation process should only take a couple of minutes.
 
-In addition to this source code, you will also have to download the data used in the analyses.  To do so, please follow the instructions in the data repository: https://github.com/wmpauli/neurosynth
+In addition to this source code, you will also have to download the data used in the analyses.  To do so, please follow the instructions in the data repository: https://github.com/wmpauli/neurosynth-data
 
 If you want to uninstall this version of neurosynth, simply delete the files listed in files.txt. 
 
